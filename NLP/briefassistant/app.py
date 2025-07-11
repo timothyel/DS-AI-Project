@@ -17,7 +17,7 @@ LANGUAGES = {
         "output_lang_label": "🗣️ Output Language",
         "button": "🚀 Generate Brief",
         "warning": "⚠️ Please enter a Client Brief first.",
-        "processing": "🔄 Processing brief with Gemini...",
+        "processing": "Processing brief...",
         "brief_type": "📎 **Brief Type**",
         "client_brief": "📤 **Client Brief:**",
         "output": "🧠 **Generated Brief:**"
@@ -32,7 +32,7 @@ LANGUAGES = {
         "output_lang_label": "🗣️ Pilih Bahasa Output",
         "button": "🚀 Proses Brief",
         "warning": "⚠️ Mohon masukkan Client Brief terlebih dahulu.",
-        "processing": "🔄 Memproses brief dengan Gemini...",
+        "processing": "Memproses brief...",
         "brief_type": "📎 **Jenis Brief**",
         "client_brief": "📤 **Client Brief:**",
         "output": "🧠 **Brief yang Dihasilkan:**"
