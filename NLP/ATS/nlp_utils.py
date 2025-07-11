@@ -1,22 +1,21 @@
 import re
 
 # === NLTK Setup ===
-# Pastikan modul NLTK tersedia & tokenizer 'punkt' telah ter-download
+import subprocess
+import sys
+
+# Paksa install nltk jika belum tersedia
 try:
     import nltk
 except ModuleNotFoundError:
-    import subprocess
-    import sys
     subprocess.check_call([sys.executable, "-m", "pip", "install", "nltk"])
     import nltk
 
-# Cek dan download tokenizer 'punkt' jika belum tersedia
+# Pastikan resource tokenizer 'punkt' tersedia
 try:
-    nltk.data.find("tokenizers/punkt")
+    nltk.data.find('tokenizers/punkt')
 except LookupError:
-    nltk.download("punkt")
-
-from nltk.tokenize import sent_tokenize
+    nltk.download('punkt')
 
 # === spaCy Setup ===
 # Load model bahasa Inggris untuk ekstraksi keyword
