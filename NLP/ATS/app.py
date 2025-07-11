@@ -17,7 +17,7 @@ st.markdown(
 )
 
 # Upload CV
-uploaded_file = st.file_uploader("📄 Upload CV kamu (format PDF)", type=["pdf"])
+uploaded_file = st.file_uploader("📄 Upload your CV (format PDF)", type=["pdf"])
 
 # Input Job Description
 job_desc = st.text_area("💼 Masukkan Job Description", height=250)
