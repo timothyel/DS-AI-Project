@@ -20,7 +20,14 @@ except LookupError:
 # === spaCy Setup ===
 # Load model bahasa Inggris untuk ekstraksi keyword
 import spacy
-nlp_spacy = spacy.load("en_core_web_sm")
+
+# Try to load spaCy model, download if not found
+try:
+    nlp_spacy = spacy.load("en_core_web_sm")
+except OSError:
+    from spacy.cli import download
+    download("en_core_web_sm")
+    nlp_spacy = spacy.load("en_core_web_sm")
 
 # === BERT Model ===
 # Gunakan pre-trained SentenceTransformer untuk similarity scoring
