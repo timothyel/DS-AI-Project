@@ -132,7 +132,6 @@ Client Brief:
 """
     }
 
-    # Fallback prompt
     prompt = templates.get(full_type, f"""
 You are a strategic planner at a digital agency. Based on the client brief below, generate a detailed **{full_type}** with clear structure.
 
@@ -185,11 +184,9 @@ if st.button(T["button"]):
         st.info(T["processing"])
         st.markdown("---")
 
-        # Bangun tipe dan prompt
         full_type = f"{brief_type} - {selected_sub}" if selected_sub else brief_type
         prompt = get_prompt(full_type, client_brief.strip(), output_lang)
 
-        # Panggil Gemini API
         try:
             model = genai.GenerativeModel("gemini-2.5-flash")
             response = model.generate_content(prompt)
