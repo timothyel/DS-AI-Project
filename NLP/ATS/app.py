@@ -59,7 +59,7 @@ if uploaded_file and job_desc:
                 """,
                 unsafe_allow_html=True
             )
-            st.markdown(f"- **Jumlah Poin CV yang dianalisis:** `{len(per_point_scores)}`")
+            # st.markdown(f"- **Jumlah Poin CV yang dianalisis:** `{len(per_point_scores)}`")
 
             # ========== Keyword Extraction ==========
             # st.subheader("📌 Keyword Utama")
