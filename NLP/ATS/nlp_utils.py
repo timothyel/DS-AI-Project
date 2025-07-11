@@ -26,14 +26,30 @@ def extract_keywords(text):
 
 def split_responsibilities_flexibly(text):
     """
-    Pisahkan teks menjadi poin-poin tanggung jawab dari CV.
-    Deteksi berdasarkan bullet points, numbering, atau kalimat panjang.
+    Pisahkan teks menjadi poin-poin logis dari CV.
+    Hindari:
+    - Header (CERTIFICATIONS, SKILLS, dll)
+    - Nama perusahaan, lokasi, info kontak
+    - Poin tanpa kata kerja (tidak menjelaskan tanggung jawab)
     """
+    section_headers = {
+        "certifications", "technical skills", "skills", "summary", "profile",
+        "languages", "education", "contact", "experience", "professional experience",
+        "projects", "awards", "interests", "tools"
+    }
+
     lines = text.splitlines()
     points = []
 
     for line in lines:
         line = line.strip()
+        lower = line.lower()
+
+        # Skip jika kemungkinan header
+        if lower in section_headers or (len(lower.split()) <= 4 and lower in section_headers):
+            continue
+
+        # Deteksi bullet point atau panjang
         if re.match(r"^(\d+[\.\)]|[-*•●])\s+", line) and len(line) > 5:
             points.append(line)
         elif len(line) > 40:
@@ -41,7 +57,14 @@ def split_responsibilities_flexibly(text):
         elif len(line) > 10:
             points.append(line)
 
-    return [p.strip() for p in points if len(p.strip()) > 5]
+    # Tambahan filter: hanya ambil kalimat yang mengandung kata kerja
+    filtered = []
+    for p in points:
+        doc = nlp_spacy(p)
+        if any(tok.pos_ == "VERB" for tok in doc):
+            filtered.append(p.strip())
+
+    return filtered
 
 
 def compute_similarity(text_a, text_b):
