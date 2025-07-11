@@ -49,17 +49,7 @@ if uploaded_file and job_desc:
             st.subheader("✅ Ringkasan")
             st.markdown(f"- **Skor Kecocokan Keseluruhan:** `{overall_score}%`")
             st.markdown(f"- **Jumlah Poin CV yang dianalisis:** `{len(per_point_scores)}`")
-
-            # Keyword dari CV dan JD
-            st.subheader("📌 Keyword Utama")
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("**Dari CV:**")
-                st.write(", ".join(keywords_cv[:20]))
-            with col2:
-                st.markdown("**Dari JD:**")
-                st.write(", ".join(keywords_jd[:20]))
-
+            
             # Per Poin Similarity
             st.subheader("🔍 Analisis Per Poin (CV vs JD)")
             for text, score in per_point_scores:
