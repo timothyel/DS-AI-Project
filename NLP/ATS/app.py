@@ -42,9 +42,9 @@ def extract_text_from_pdf(file):
 
 # Proses jika file dan JD tersedia
 if uploaded_file and job_desc:
-    if st.button("🔍 Cek Kecocokan"):
+    if st.button("🔍 Analyze"):
         try:
-            with st.spinner("📄 Mengekstrak isi CV..."):
+            with st.spinner("📄 Extracting CV Content..."):
                 cv_text = extract_text_from_pdf(uploaded_file)
 
             with st.spinner("Analyzing Resume"):
