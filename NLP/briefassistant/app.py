@@ -192,8 +192,6 @@ if st.button(T["button"]):
             response = model.generate_content(prompt)
 
             st.markdown(f"{T['brief_type']}: **{full_type}**")
-            st.code(client_brief.strip(), language="markdown")
-            st.markdown(T["output"])
             st.markdown(response.text)
 
         except Exception as e:
