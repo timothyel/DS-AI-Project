@@ -11,7 +11,7 @@ from nlp_utils import (
 
 # Konfigurasi halaman Streamlit
 st.set_page_config(page_title="ATS CV Checker", layout="wide")
-st.title("ATS CV vs Job Description Checker")
+st.title("ATS Resume Scoring")
 st.markdown(
     "Unggah CV kamu dalam format **PDF**, lalu masukkan Job Description (JD) "
     "untuk melihat kecocokan konten CV dengan posisi yang ditargetkan."
@@ -40,7 +40,7 @@ if uploaded_file and job_desc:
             with st.spinner("📄 Mengekstrak isi CV..."):
                 cv_text = extract_text_from_pdf(uploaded_file)
 
-            with st.spinner("🤖 Menganalisis konten..."):
+            with st.spinner("Analyzing Resume"):
                 keywords_cv = extract_keywords(cv_text)
                 keywords_jd = extract_keywords(job_desc)
                 overall_score = compute_similarity(cv_text, job_desc)
