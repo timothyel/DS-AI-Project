@@ -13,8 +13,7 @@ from nlp_utils import (
 st.set_page_config(page_title="ATS CV Checker", layout="wide")
 st.title("ATS Resume Scoring")
 st.markdown(
-    "Unggah CV kamu dalam format **PDF**, lalu masukkan Job Description (JD) "
-    "untuk melihat kecocokan konten CV dengan posisi yang ditargetkan."
+    "Upload your CV (PDF) and enter the job description to check compatibility"
 )
 
 # Upload CV
