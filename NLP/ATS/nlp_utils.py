@@ -1,9 +1,32 @@
 import re
-import nltk
-import spacy
-from nltk.tokenize import sent_tokenize
-from sentence_transformers import SentenceTransformer, util
 
+# === NLTK Setup ===
+# Pastikan modul NLTK tersedia & tokenizer 'punkt' telah ter-download
+try:
+    import nltk
+except ModuleNotFoundError:
+    import subprocess
+    import sys
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "nltk"])
+    import nltk
+
+# Cek dan download tokenizer 'punkt' jika belum tersedia
+try:
+    nltk.data.find("tokenizers/punkt")
+except LookupError:
+    nltk.download("punkt")
+
+from nltk.tokenize import sent_tokenize
+
+# === spaCy Setup ===
+# Load model bahasa Inggris untuk ekstraksi keyword
+import spacy
+nlp_spacy = spacy.load("en_core_web_sm")
+
+# === BERT Model ===
+# Gunakan pre-trained SentenceTransformer untuk similarity scoring
+from sentence_transformers import SentenceTransformer, util
+model_bert = SentenceTransformer("all-MiniLM-L6-v2")
 # Download data NLTK untuk tokenizing kalimat (sekali saja)
 nltk.download("punkt")
 
