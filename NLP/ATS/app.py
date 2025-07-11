@@ -2,18 +2,19 @@ import streamlit as st
 from io import BytesIO
 from PyPDF2 import PdfReader
 
-# Import fungsi NLP
+# Import fungsi NLP dari nlp_utils.py
 from nlp_utils import (
     extract_keywords,
     compute_similarity,
     compute_similarity_per_point
 )
 
-# Konfigurasi halaman
+# Konfigurasi halaman Streamlit
 st.set_page_config(page_title="ATS CV Checker", layout="wide")
 st.title("🧠 ATS CV vs Job Description Checker")
 st.markdown(
-    "Unggah CV kamu dalam format **PDF**, lalu masukkan Job Description (JD) untuk melihat kecocokan konten CV dengan posisi yang ditargetkan."
+    "Unggah CV kamu dalam format **PDF**, lalu masukkan Job Description (JD) "
+    "untuk melihat kecocokan konten CV dengan posisi yang ditargetkan."
 )
 
 # Upload CV
@@ -22,7 +23,7 @@ uploaded_file = st.file_uploader("📄 Upload CV kamu (format PDF)", type=["pdf"
 # Input Job Description
 job_desc = st.text_area("💼 Masukkan Job Description", height=250)
 
-# Fungsi untuk ekstrak teks dari PDF
+# Fungsi untuk ekstraksi teks dari PDF
 def extract_text_from_pdf(file):
     pdf = PdfReader(file)
     text = ""
@@ -32,7 +33,7 @@ def extract_text_from_pdf(file):
             text += page_text + "\n"
     return text.strip()
 
-# Jika file dan JD sudah diisi
+# Proses jika file dan JD tersedia
 if uploaded_file and job_desc:
     if st.button("🔍 Cek Kecocokan"):
         try:
@@ -45,23 +46,39 @@ if uploaded_file and job_desc:
                 overall_score = compute_similarity(cv_text, job_desc)
                 per_point_scores = compute_similarity_per_point(cv_text, job_desc)
 
-            # Hasil Analisis
-          color = "green" if overall_score >= 70 else "orange" if overall_score >= 40 else "red"
+            # ========== Ringkasan ==========
+            st.subheader("✅ Ringkasan")
 
-st.markdown(
-    f"<div style='font-size:24px; font-weight:bold;'>Skor Kecocokan Keseluruhan: "
-    f"<span style='color:{color}'>{overall_score}%</span></div>",
-    unsafe_allow_html=True
-)
+            color = "green" if overall_score >= 70 else "orange" if overall_score >= 40 else "red"
+            st.markdown(
+                f"""
+                <div style='font-size:24px; font-weight:bold;'>
+                    Skor Kecocokan Keseluruhan:
+                    <span style='color:{color}'>{overall_score}%</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            st.markdown(f"- **Jumlah Poin CV yang dianalisis:** `{len(per_point_scores)}`")
 
-            # st.markdown(f"- **Jumlah Poin CV yang dianalisis:** `{len(per_point_scores)}`")
-            
-            # # Per Poin Similarity
+            # ========== Keyword Extraction ==========
+            # st.subheader("📌 Keyword Utama")
+            # col1, col2 = st.columns(2)
+            # with col1:
+            #     st.markdown("**Dari CV:**")
+            #     st.write(", ".join(keywords_cv[:20]))
+            # with col2:
+            #     st.markdown("**Dari JD:**")
+            #     st.write(", ".join(keywords_jd[:20]))
+
+            # ========== Per Poin Similarity ==========
             # st.subheader("🔍 Analisis Per Poin (CV vs JD)")
             # for text, score in per_point_scores:
-            #     color = "green" if score >= 70 else "orange" if score >= 40 else "red"
+            #     point_color = "green" if score >= 70 else "orange" if score >= 40 else "red"
             #     st.markdown(
-            #         f"<span style='color:{color}'>**{score}%**</span> — {text}",
+            #         f"<div style='font-size:18px;'>"
+            #         f"<span style='color:{point_color}; font-weight:bold'>{score}%</span> — {text}"
+            #         f"</div>",
             #         unsafe_allow_html=True
             #     )
 
