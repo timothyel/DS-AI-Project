@@ -48,7 +48,7 @@ if uploaded_file and job_desc:
             # Hasil Analisis
             st.subheader("✅ Ringkasan")
             st.markdown(f"- **Skor Kecocokan Keseluruhan:** `{overall_score}%`")
-            st.markdown(f"- **Jumlah Poin CV yang dianalisis:** `{len(per_point_scores)}`")
+            # st.markdown(f"- **Jumlah Poin CV yang dianalisis:** `{len(per_point_scores)}`")
             
             # # Per Poin Similarity
             # st.subheader("🔍 Analisis Per Poin (CV vs JD)")
