@@ -19,7 +19,6 @@ LANGUAGES = {
         "warning": "⚠️ Please enter a Client Brief first.",
         "processing": "Processing brief...",
         "brief_type": "📎 **Brief Type**",
-        "client_brief": "📤 **Client Brief:**",
         "output": "🧠 **Generated Brief:**"
     },
     "ID": {
@@ -34,7 +33,6 @@ LANGUAGES = {
         "warning": "⚠️ Mohon masukkan Client Brief terlebih dahulu.",
         "processing": "Memproses brief...",
         "brief_type": "📎 **Jenis Brief**",
-        "client_brief": "📤 **Client Brief:**",
         "output": "🧠 **Brief yang Dihasilkan:**"
     }
 }
@@ -192,10 +190,10 @@ if st.button(T["button"]):
             response = model.generate_content(prompt)
 
             st.markdown(f"{T['brief_type']}: **{full_type}**")
-            st.markdown(response.text)
-
-        tyled_response = f"""<div style='font-size:14px; line-height:1.6;'>{response.text.replace('\n', '<br>')}</div>"""
-        st.markdown(styled_response, unsafe_allow_html=True)
+            st.markdown(T["output"])
+            
+            styled_response = f"""<div style='font-size:14px; line-height:1.6;'>{response.text.replace('\n', '<br>')}</div>"""
+            st.markdown(styled_response, unsafe_allow_html=True)
 
         except Exception as e:
             st.error(f"❌ Failed to generate content:\n\n{str(e)}")
