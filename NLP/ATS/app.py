@@ -1,5 +1,6 @@
 import streamlit as st
 import nltk
+nltk.download('wordnet')
 from nlp_utils import extract_keywords, compute_similarity, compute_similarity_per_point
 
 st.set_page_config(page_title="ATS CV Checker", layout="wide")
