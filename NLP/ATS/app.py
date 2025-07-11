@@ -28,7 +28,7 @@ if uploaded_file is not None:
         st.stop()
 
 # Input Job Description
-job_desc = st.text_area("💼 Masukkan Job Description", height=250)
+job_desc = st.text_area("💼 Job Description", height=250)
 
 # Fungsi untuk ekstraksi teks dari PDF
 def extract_text_from_pdf(file):
