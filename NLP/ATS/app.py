@@ -17,7 +17,7 @@ st.markdown(
 )
 
 # Upload CV
-uploaded_file = st.file_uploader("📄 Upload your CV (PDF only)", type=["pdf"])
+uploaded_file = st.file_uploader("📄 Upload your CV (Max 5MB) ", type=["pdf"])
 
 MAX_FILE_SIZE_MB = 5
 
