@@ -37,12 +37,14 @@ LANGUAGES = {
     }
 }
 
-# ==== Prompt Templates ====
+# ==== Prompt Builder ====
 def get_prompt(full_type, brief, output_lang):
     language_instruction = {
-        "English": "Please write the output in English. and make the font of your body paragraph in size of 14pt",
-        "Bahasa Indonesia": "Tulis hasil brief ini dalam Bahasa Indonesia dan buat tulisan selain judul di ukuran 14pt ."
+        "English": "Please write the output in English and make the font of your body paragraph in size of 14pt.",
+        "Bahasa Indonesia": "Tulis hasil brief ini dalam Bahasa Indonesia dan buat tulisan selain judul di ukuran 14pt."
     }
+
+    common_instruction = language_instruction[output_lang]
 
     templates = {
         "Creative Brief": f"""
@@ -57,6 +59,8 @@ You are a creative strategist in a digital agency. Create a **Creative Brief** f
 
 Client Brief:
 {brief}
+
+{common_instruction}
 """,
         "Sub-Creative Brief - Production": f"""
 You are a production lead in a creative team. Based on the brief below, create a **Production Brief** with:
@@ -68,6 +72,8 @@ You are a production lead in a creative team. Based on the brief below, create a
 
 Client Brief:
 {brief}
+
+{common_instruction}
 """,
         "Sub-Creative Brief - Visual": f"""
 You are a visual designer. Turn the brief into a **Visual Direction Brief** covering:
@@ -78,6 +84,8 @@ You are a visual designer. Turn the brief into a **Visual Direction Brief** cove
 
 Client Brief:
 {brief}
+
+{common_instruction}
 """,
         "Sub-Creative Brief - Copywriting": f"""
 You are a senior copywriter. Create a **Copywriting Brief** including:
@@ -88,6 +96,8 @@ You are a senior copywriter. Create a **Copywriting Brief** including:
 
 Client Brief:
 {brief}
+
+{common_instruction}
 """,
         "Media Brief": f"""
 You are a media strategist. Generate a structured **Media Brief** containing:
@@ -98,6 +108,8 @@ You are a media strategist. Generate a structured **Media Brief** containing:
 
 Client Brief:
 {brief}
+
+{common_instruction}
 """,
         "Sub-Media Brief - Platform": f"""
 You are a digital planner. Generate a **Platform Brief** including:
@@ -108,6 +120,8 @@ You are a digital planner. Generate a **Platform Brief** including:
 
 Client Brief:
 {brief}
+
+{common_instruction}
 """,
         "Sub-Media Brief - Budgeting": f"""
 You are a performance media specialist. Make a **Media Budget Brief**:
@@ -117,6 +131,8 @@ You are a performance media specialist. Make a **Media Budget Brief**:
 
 Client Brief:
 {brief}
+
+{common_instruction}
 """,
         "Sub-Media Brief - KPI": f"""
 You are a data-driven strategist. Build a **KPI Brief** including:
@@ -127,83 +143,30 @@ You are a data-driven strategist. Build a **KPI Brief** including:
 
 Client Brief:
 {brief}
+
+{common_instruction}
 """
     }
 
-    prompt = templates.get(full_type, f"""
+    return templates.get(full_type, f"""
 You are a strategic planner at a digital agency. Based on the client brief below, generate a detailed **{full_type}** with clear structure.
 
 Client Brief:
 {brief}
+
+{common_instruction}
 """)
 
-    return prompt + "\n\n" + language_instruction[output_lang]
-
 # ==== UI ====
-
-# Pilih bahasa UI
 lang_code = st.radio("🌐 Language", ["EN", "ID"], horizontal=True)
 T = LANGUAGES[lang_code]
 
 st.title(T["title"])
 st.markdown(T["description"])
 
-# Input brief
 client_brief = st.text_area(T["input_label"], height=250, placeholder=T["placeholder"])
 
-# Pilih tipe brief
 brief_type = st.selectbox(
     T["dropdown_label"],
-    (
-        "Creative Brief",
-        "Sub-Creative Brief",
-        "Media Brief",
-        "Sub-Media Brief"
-    )
+    ("Creative Brief", "Sub-Creative Brief", "Media Brief", "Sub-Media Brief")
 )
-
-# Sub-kategori jika ada
-sub_map = {
-    "Sub-Creative Brief": ["Production", "Visual", "Copywriting"],
-    "Sub-Media Brief": ["Platform", "Budgeting", "KPI"]
-}
-selected_sub = None
-if brief_type in sub_map:
-    selected_sub = st.selectbox(T["sub_label"], sub_map[brief_type])
-
-# Pilih output language
-output_lang = st.radio(T["output_lang_label"], ["English", "Bahasa Indonesia"], horizontal=True)
-
-# Tombol generate
-if st.button(T["button"]):
-    if not client_brief.strip():
-        st.warning(T["warning"])
-    else:
-        st.info(T["processing"])
-        st.markdown("---")
-
-        full_type = f"{brief_type} - {selected_sub}" if selected_sub else brief_type
-        prompt = get_prompt(full_type, client_brief.strip(), output_lang)
-
-        try:
-            model = genai.GenerativeModel("gemini-2.5-flash")
-            response = model.generate_content(prompt)
-
-            st.markdown(f"{T['brief_type']}: **{full_type}**")
-            st.markdown(T["output"])
-
-            # Inject CSS for font size
-            st.markdown("""
-                <style>
-                .brief-output {
-                    font-size: 14px;
-                    line-height: 1.6;
-                }
-                </style>
-            """, unsafe_allow_html=True)
-
-            # Display with styling
-            st.markdown(f"<div class='brief-output'>{response.text}</div>", unsafe_allow_html=True)
-
-        except Exception as e:
-            st.error(f"❌ Failed to generate content:\n\n{str(e)}")
