@@ -11,7 +11,7 @@ from nlp_utils import (
 
 # Konfigurasi halaman Streamlit
 st.set_page_config(page_title="ATS CV Checker", layout="wide")
-st.title("🧠 ATS CV vs Job Description Checker")
+st.title("ATS CV vs Job Description Checker")
 st.markdown(
     "Unggah CV kamu dalam format **PDF**, lalu masukkan Job Description (JD) "
     "untuk melihat kecocokan konten CV dengan posisi yang ditargetkan."
