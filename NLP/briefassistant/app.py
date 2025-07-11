@@ -194,5 +194,8 @@ if st.button(T["button"]):
             st.markdown(f"{T['brief_type']}: **{full_type}**")
             st.markdown(response.text)
 
+        tyled_response = f"""<div style='font-size:14px; line-height:1.6;'>{response.text.replace('\n', '<br>')}</div>"""
+        st.markdown(styled_response, unsafe_allow_html=True)
+
         except Exception as e:
             st.error(f"❌ Failed to generate content:\n\n{str(e)}")
