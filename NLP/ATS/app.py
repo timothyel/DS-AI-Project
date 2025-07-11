@@ -1,7 +1,13 @@
 import streamlit as st
 import nltk
-# Download 'wordnet' for NLTK if not already downloaded
+# Download essential NLTK data for NLP tasks if not already downloaded
+# 'wordnet' is for lemmatization
 nltk.download('wordnet')
+# 'punkt' is for sentence tokenization (used by sent_tokenize)
+nltk.download('punkt')
+# 'stopwords' is for filtering common words
+nltk.download('stopwords')
+
 # Import custom NLP utility functions
 from nlp_utils import extract_keywords, compute_similarity, compute_similarity_per_point
 
