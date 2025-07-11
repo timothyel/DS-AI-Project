@@ -46,13 +46,13 @@ if uploaded_file and job_desc:
                 per_point_scores = compute_similarity_per_point(cv_text, job_desc)
 
             # Hasil Analisis
-           color = "green" if overall_score >= 70 else "orange" if overall_score >= 40 else "red"
+          color = "green" if overall_score >= 70 else "orange" if overall_score >= 40 else "red"
 
-            st.markdown(
-                f"<div style='font-size:24px; font-weight:bold;'>Skor Kecocokan Keseluruhan: "
-                f"<span style='color:{color}'>{overall_score}%</span></div>",
-                unsafe_allow_html=True
-                )
+st.markdown(
+    f"<div style='font-size:24px; font-weight:bold;'>Skor Kecocokan Keseluruhan: "
+    f"<span style='color:{color}'>{overall_score}%</span></div>",
+    unsafe_allow_html=True
+)
 
             # st.markdown(f"- **Jumlah Poin CV yang dianalisis:** `{len(per_point_scores)}`")
             
