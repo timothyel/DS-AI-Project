@@ -17,8 +17,15 @@ st.markdown(
 )
 
 # Upload CV
-uploaded_file = st.file_uploader("📄 Upload your CV (in PDF)", type=["pdf"])
+uploaded_file = st.file_uploader("📄 Upload your CV (PDF only)", type=["pdf"])
+
 MAX_FILE_SIZE_MB = 5
+
+if uploaded_file is not None:
+    file_size_mb = len(uploaded_file.getvalue()) / (1024 * 1024)  # convert bytes to MB
+    if file_size_mb > MAX_FILE_SIZE_MB:
+        st.error(f"File terlalu besar! Maksimal {MAX_FILE_SIZE_MB} MB.")
+        st.stop()
 
 # Input Job Description
 job_desc = st.text_area("💼 Masukkan Job Description", height=250)
