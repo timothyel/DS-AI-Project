@@ -1,17 +1,30 @@
 import streamlit as st
 import io
-from weasyprint import HTML
+from fpdf import FPDF
+import html2text
 
-def generate_pdf_download_button_from_html(html_content: str, filename="brief_output.pdf"):
-    # Generate PDF from HTML string
-    pdf_file = io.BytesIO()
-    HTML(string=html_content).write_pdf(pdf_file)
-    pdf_file.seek(0)
+def generate_pdf_download_button(text, filename="brief_output.pdf"):
+    # Konversi dari markdown-like ke plain text (supaya tabel & bullet tidak rusak)
+    text_maker = html2text.HTML2Text()
+    text_maker.body_width = 0
+    plain_text = text_maker.handle(text)
 
-    # Show download button
+    # PDF Generation
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.set_font("Arial", size=12)
+
+    for line in plain_text.split("\n"):
+        pdf.multi_cell(0, 10, line)
+
+    pdf_buffer = io.BytesIO()
+    pdf.output(pdf_buffer)
+    pdf_buffer.seek(0)
+
     st.download_button(
-        label="📄 Download as PDF",
-        data=pdf_file,
+        label="📥 Download as PDF",
+        data=pdf_buffer,
         file_name=filename,
         mime="application/pdf"
     )
