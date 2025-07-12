@@ -8,6 +8,14 @@ from download_utils import generate_pdf_download_button
 st.set_page_config(page_title="Brief Breakdown Assistant", layout="wide")
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
+# ==== Init session state ====
+if "generated_text" not in st.session_state:
+    st.session_state.generated_text = ""
+if "processing" not in st.session_state:
+    st.session_state.processing = False
+if "full_type" not in st.session_state:
+    st.session_state.full_type = ""
+
 # ==== Multibahasa UI ====
 LANGUAGES = {
     "EN": {
@@ -144,20 +152,33 @@ sub_map = {
 selected_sub = st.selectbox(T["sub_label"], sub_map[brief_type]) if brief_type in sub_map else None
 output_lang = st.radio(T["output_lang_label"], ["English", "Bahasa Indonesia"], horizontal=True)
 
+# ==== Tampilkan processing indicator ====
 if st.session_state.processing:
     st.info(T["processing"])
 
+# ==== Tampilkan hasil sebelumnya jika ada ====
 if st.session_state.generated_text:
     st.markdown(f"{T['brief_type']}: **{st.session_state.full_type}**")
     st.markdown(T["output"])
-
     html_output = markdown.markdown(st.session_state.generated_text)
-    st.markdown(
-        f"<div style='font-size:14px; line-height:1.7;'>{html_output}</div>",
-        unsafe_allow_html=True
-    )
+    st.markdown(f"<div style='font-size:14px; line-height:1.7;'>{html_output}</div>", unsafe_allow_html=True)
+    generate_pdf_download_button(st.session_state.generated_text, filename=f"{st.session_state.full_type.replace(' ', '_').lower()}.pdf")
 
-    generate_pdf_download_button(
-        st.session_state.generated_text,
-        filename=f"{st.session_state.full_type.replace(' ', '_').lower()}.pdf"
-    )
+# ==== Tombol Generate ====
+if st.button(T["button"]):
+    if not client_brief.strip():
+        st.warning(T["warning"])
+    else:
+        st.session_state.processing = True
+        full_type = f"{brief_type} - {selected_sub}" if selected_sub else brief_type
+        prompt = get_prompt(full_type, client_brief.strip(), output_lang)
+
+        try:
+            model = genai.GenerativeModel("gemini-2.5-flash")
+            response = model.generate_content(prompt)
+            st.session_state.generated_text = response.text
+            st.session_state.full_type = full_type
+        except Exception as e:
+            st.error(f"❌ Failed to generate content:\n\n{str(e)}")
+        finally:
+            st.session_state.processing = False
