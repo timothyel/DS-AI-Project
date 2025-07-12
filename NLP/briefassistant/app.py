@@ -148,7 +148,9 @@ if st.button(T["button"]):
     if not client_brief.strip():
         st.warning(T["warning"])
     else:
-        st.info(T["processing"])
+        processing_box = st.empty()
+        processing_box.info(T["processing"])
+
         full_type = f"{brief_type} - {selected_sub}" if selected_sub else brief_type
         prompt = get_prompt(full_type, client_brief.strip(), output_lang)
 
@@ -156,6 +158,8 @@ if st.button(T["button"]):
             model = genai.GenerativeModel("gemini-2.5-flash")
             response = model.generate_content(prompt)
             generated = response.text
+
+            processing_box.empty()  # ⬅️ ini yang hilangin "processing..."
 
             st.markdown(f"{T['brief_type']}: **{full_type}**")
             st.markdown(T["output"])
@@ -166,4 +170,5 @@ if st.button(T["button"]):
             generate_pdf_download_button(html_output, filename=f"{full_type.replace(' ', '_').lower()}.pdf")
 
         except Exception as e:
+            processing_box.empty()
             st.error(f"❌ Failed to generate content:\n\n{str(e)}")
