@@ -8,7 +8,7 @@ from download_utils import generate_pdf_download_button_from_html
 st.set_page_config(page_title="Brief Breakdown Assistant", layout="wide")
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-# ==== Text Multibahasa ====
+# ==== Multibahasa UI ====
 LANGUAGES = {
     "EN": {
         "title": "📋 Digital Agency Brief Assistant",
@@ -40,7 +40,7 @@ LANGUAGES = {
     }
 }
 
-# ==== Prompt Generator ====
+# ==== Prompt Builder ====
 def get_prompt(full_type, brief, output_lang):
     language_instruction = {
         "English": "Please write the output in English.",
@@ -48,8 +48,7 @@ def get_prompt(full_type, brief, output_lang):
     }
 
     templates = {
-        "Creative Brief": f"""
-You are a creative strategist in a digital agency. Create a **Creative Brief** from the following client input with clear structure, including:
+        "Creative Brief": f"""You are a creative strategist. Create a **Creative Brief** with:
 - Background
 - Objectives
 - Target Audience
@@ -61,8 +60,7 @@ You are a creative strategist in a digital agency. Create a **Creative Brief** f
 Client Brief:
 {brief}
 """,
-        "Sub-Creative Brief - Production": f"""
-You are a production lead in a creative team. Based on the brief below, create a **Production Brief** with:
+        "Sub-Creative Brief - Production": f"""You are a production lead. Create a **Production Brief**:
 - Format & Duration
 - Shooting Needs
 - Talent & Location
@@ -72,18 +70,16 @@ You are a production lead in a creative team. Based on the brief below, create a
 Client Brief:
 {brief}
 """,
-        "Sub-Creative Brief - Visual": f"""
-You are a visual designer. Turn the brief into a **Visual Direction Brief** covering:
+        "Sub-Creative Brief - Visual": f"""You are a visual designer. Create a **Visual Direction Brief**:
 - Visual Style
 - Colors & Fonts
-- Moodboard references
+- Moodboard
 - Asset Guidelines
 
 Client Brief:
 {brief}
 """,
-        "Sub-Creative Brief - Copywriting": f"""
-You are a senior copywriter. Create a **Copywriting Brief** including:
+        "Sub-Creative Brief - Copywriting": f"""You are a copywriter. Create a **Copywriting Brief**:
 - Key Messages
 - Tone of Voice
 - Must-use Phrases
@@ -92,30 +88,25 @@ You are a senior copywriter. Create a **Copywriting Brief** including:
 Client Brief:
 {brief}
 """,
-        "Media Brief": f"""
-You are a media strategist. Generate a structured **Media Brief** containing:
+        "Media Brief": f"""You are a media strategist. Create a **Media Brief**:
 - Recommended Channels
 - Budget Plan
 - Targeting Strategy
 - KPI & Measurement
 
-Please format the output using markdown (with bullet points, tables if needed).
-
 Client Brief:
 {brief}
 """,
-        "Sub-Media Brief - Platform": f"""
-You are a digital planner. Generate a **Platform Brief** including:
+        "Sub-Media Brief - Platform": f"""You are a digital planner. Create a **Platform Brief**:
 - Platform Choices
 - Rationale
 - Format Suggestions
-- Organic vs Paid approach
+- Organic vs Paid
 
 Client Brief:
 {brief}
 """,
-        "Sub-Media Brief - Budgeting": f"""
-You are a performance media specialist. Make a **Media Budget Brief**:
+        "Sub-Media Brief - Budgeting": f"""You are a media buyer. Create a **Budget Brief**:
 - Total & Per-Channel Budget
 - Efficiency Estimates
 - Optimization Plan
@@ -123,8 +114,7 @@ You are a performance media specialist. Make a **Media Budget Brief**:
 Client Brief:
 {brief}
 """,
-        "Sub-Media Brief - KPI": f"""
-You are a data-driven strategist. Build a **KPI Brief** including:
+        "Sub-Media Brief - KPI": f"""You are a strategist. Create a **KPI Brief**:
 - Main & Supporting KPIs
 - Benchmarks
 - Attribution Plan
@@ -135,56 +125,30 @@ Client Brief:
 """
     }
 
-    prompt = templates.get(full_type, f"""
-You are a strategic planner at a digital agency. Based on the client brief below, generate a detailed **{full_type}** with clear structure.
-
-Client Brief:
-{brief}
-""")
-
-    return prompt + "\n\n" + language_instruction[output_lang]
+    return templates.get(full_type, f"Generate a {full_type}:\n{brief}") + "\n\n" + language_instruction[output_lang]
 
 # ==== UI ====
-
-# Bahasa antarmuka
 lang_code = st.radio("🌐 Language", ["EN", "ID"], horizontal=True)
 T = LANGUAGES[lang_code]
 
 st.title(T["title"])
 st.markdown(T["description"])
 
-# Input brief
 client_brief = get_client_brief_ui(T["input_label"], T["placeholder"])
-
-# Jenis brief
-brief_type = st.selectbox(
-    T["dropdown_label"],
-    (
-        "Creative Brief",
-        "Sub-Creative Brief",
-        "Media Brief",
-        "Sub-Media Brief"
-    )
-)
-
-# Sub-kategori jika diperlukan
+brief_type = st.selectbox(T["dropdown_label"], ["Creative Brief", "Sub-Creative Brief", "Media Brief", "Sub-Media Brief"])
 sub_map = {
     "Sub-Creative Brief": ["Production", "Visual", "Copywriting"],
     "Sub-Media Brief": ["Platform", "Budgeting", "KPI"]
 }
 selected_sub = st.selectbox(T["sub_label"], sub_map[brief_type]) if brief_type in sub_map else None
-
-# Output language
 output_lang = st.radio(T["output_lang_label"], ["English", "Bahasa Indonesia"], horizontal=True)
 
-# Tombol generate
+# Generate
 if st.button(T["button"]):
     if not client_brief.strip():
         st.warning(T["warning"])
     else:
         st.info(T["processing"])
-        st.markdown("---")
-
         full_type = f"{brief_type} - {selected_sub}" if selected_sub else brief_type
         prompt = get_prompt(full_type, client_brief.strip(), output_lang)
 
@@ -193,21 +157,13 @@ if st.button(T["button"]):
             response = model.generate_content(prompt)
             generated = response.text
 
-            # Tampilkan hasil
             st.markdown(f"{T['brief_type']}: **{full_type}**")
             st.markdown(T["output"])
 
-            # Konversi markdown ke HTML
-            safe_html = markdown.markdown(generated)
-            styled_html = f"<div style='font-size:14px; line-height:1.7;'>{safe_html}</div>"
+            html_output = markdown.markdown(generated)
+            st.markdown(f"<div style='font-size:14px; line-height:1.7;'>{html_output}</div>", unsafe_allow_html=True)
 
-            st.markdown(styled_html, unsafe_allow_html=True)
-
-            # Tombol download
-            generate_pdf_download_button_from_html(
-                html_content=styled_html,
-                filename=f"{full_type.replace(' ', '_').lower()}_brief.pdf"
-            )
+            generate_pdf_download_button_from_html(html_output, filename=f"{full_type.replace(' ', '_').lower()}.pdf")
 
         except Exception as e:
             st.error(f"❌ Failed to generate content:\n\n{str(e)}")
