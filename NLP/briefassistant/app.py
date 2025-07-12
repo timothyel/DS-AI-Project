@@ -89,7 +89,7 @@ Client Brief:
 {brief}
 """,
         "Media Brief": f"""You are a media strategist. Create a **Media Brief**:
-Please write it in clean format using bullet points 
+Please write it in a clean format using bullet points 
 - Recommended Channels
 - Budget Plan 
 - Targeting Strategy
@@ -148,22 +148,20 @@ if st.button(T["button"]):
     if not client_brief.strip():
         st.warning(T["warning"])
     else:
-        st.info(T["processing"])
-        full_type = f"{brief_type} - {selected_sub}" if selected_sub else brief_type
-        prompt = get_prompt(full_type, client_brief.strip(), output_lang)
+        if st.session_state.processing:
+    st.info(T["processing"])
 
-        try:
-            model = genai.GenerativeModel("gemini-2.5-flash")
-            response = model.generate_content(prompt)
-            generated = response.text
+if st.session_state.generated_text:
+    st.markdown(f"{T['brief_type']}: **{st.session_state.full_type}**")
+    st.markdown(T["output"])
 
-            st.markdown(f"{T['brief_type']}: **{full_type}**")
-            st.markdown(T["output"])
+    html_output = markdown.markdown(st.session_state.generated_text)
+    st.markdown(
+        f"<div style='font-size:14px; line-height:1.7;'>{html_output}</div>",
+        unsafe_allow_html=True
+    )
 
-            html_output = markdown.markdown(generated)
-            st.markdown(f"<div style='font-size:14px; line-height:1.7;'>{html_output}</div>", unsafe_allow_html=True)
-
-            generate_pdf_download_button(text, filename=f"{full_type.replace(' ', '_').lower()}.pdf")
-
-        except Exception as e:
-            st.error(f"❌ Failed to generate content:\n\n{str(e)}")
+    generate_pdf_download_button(
+        st.session_state.generated_text,
+        filename=f"{st.session_state.full_type.replace(' ', '_').lower()}.pdf"
+    )
