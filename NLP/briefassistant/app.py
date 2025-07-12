@@ -1,10 +1,8 @@
 import streamlit as st
 import google.generativeai as genai
 import markdown
-import html
-import io
-from fpdf import FPDF
-from input_section import get_client_brief_ui  # Pastikan file input_section.py sudah ada
+from input_section import get_client_brief_ui
+from download_utils import generate_pdf_download_button
 
 # ==== Konfigurasi ====
 st.set_page_config(page_title="Brief Breakdown Assistant", layout="wide")
@@ -42,7 +40,7 @@ LANGUAGES = {
     }
 }
 
-# ==== Prompt Templates ====
+# ==== Prompt Template ====
 def get_prompt(full_type, brief, output_lang):
     language_instruction = {
         "English": "Please write the output in English. and make the font of your body paragraph in size of 14pt",
@@ -145,15 +143,13 @@ Client Brief:
     return prompt + "\n\n" + language_instruction[output_lang]
 
 # ==== UI ====
-
-# Pilih bahasa UI
 lang_code = st.radio("🌐 Language", ["EN", "ID"], horizontal=True)
 T = LANGUAGES[lang_code]
 
 st.title(T["title"])
 st.markdown(T["description"])
 
-# Input brief (from text or file)
+# Input
 client_brief = get_client_brief_ui(T["input_label"], T["placeholder"])
 
 # Pilih tipe brief
@@ -167,16 +163,14 @@ brief_type = st.selectbox(
     )
 )
 
-# Sub-kategori jika ada
+# Subkategori
 sub_map = {
     "Sub-Creative Brief": ["Production", "Visual", "Copywriting"],
     "Sub-Media Brief": ["Platform", "Budgeting", "KPI"]
 }
-selected_sub = None
-if brief_type in sub_map:
-    selected_sub = st.selectbox(T["sub_label"], sub_map[brief_type])
+selected_sub = st.selectbox(T["sub_label"], sub_map[brief_type]) if brief_type in sub_map else None
 
-# Pilih output language
+# Output language
 output_lang = st.radio(T["output_lang_label"], ["English", "Bahasa Indonesia"], horizontal=True)
 
 # Tombol generate
@@ -199,34 +193,10 @@ if st.button(T["button"]):
             st.markdown(T["output"])
 
             safe_html = markdown.markdown(generated)
-            styled_output = f"""<div style="font-size:14px; line-height:1.7;">{safe_html}</div>"""
-            st.markdown(styled_output, unsafe_allow_html=True)
+            st.markdown(f"""<div style="font-size:14px; line-height:1.7;">{safe_html}</div>""", unsafe_allow_html=True)
 
-            # PDF Export Section
-            class PDF(FPDF):
-                def header(self):
-                    self.set_font("Arial", "B", 14)
-                    self.cell(0, 10, f"{full_type}", ln=True, align='C')
-                    self.ln(10)
-
-                def add_body(self, text):
-                    self.set_font("Arial", "", 12)
-                    self.multi_cell(0, 8, text)
-
-            pdf = PDF()
-            pdf.add_page()
-            pdf.add_body(generated)
-
-            pdf_buffer = io.BytesIO()
-            pdf.output(pdf_buffer)
-            pdf_buffer.seek(0)
-
-            st.download_button(
-                label="📄 Download as PDF",
-                data=pdf_buffer,
-                file_name=f"{full_type.replace(' ', '_').lower()}_brief.pdf",
-                mime="application/pdf"
-            )
+            # 🔽 Tombol download PDF
+            generate_pdf_download_button(generated, filename=f"{full_type.replace(' ', '_').lower()}_brief.pdf")
 
         except Exception as e:
             st.error(f"❌ Failed to generate content:\n\n{str(e)}")
