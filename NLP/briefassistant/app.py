@@ -2,6 +2,8 @@ import streamlit as st
 import google.generativeai as genai
 import markdown
 import html
+import io  # Untuk tombol download
+from input_section import get_client_brief_ui  # Fungsi input dipisah ke file lain
 
 # ==== Konfigurasi ====
 st.set_page_config(page_title="Brief Breakdown Assistant", layout="wide")
@@ -47,8 +49,7 @@ def get_prompt(full_type, brief, output_lang):
     }
 
     templates = {
-        "Creative Brief": f"""
-You are a creative strategist in a digital agency. Create a **Creative Brief** from the following client input with clear structure, including:
+        "Creative Brief": f"""You are a creative strategist in a digital agency. Create a **Creative Brief** from the following client input with clear structure, including:
 - Background
 - Objectives
 - Target Audience
@@ -60,8 +61,7 @@ You are a creative strategist in a digital agency. Create a **Creative Brief** f
 Client Brief:
 {brief}
 """,
-        "Sub-Creative Brief - Production": f"""
-You are a production lead in a creative team. Based on the brief below, create a **Production Brief** with:
+        "Sub-Creative Brief - Production": f"""You are a production lead in a creative team. Based on the brief below, create a **Production Brief** with:
 - Format & Duration
 - Shooting Needs
 - Talent & Location
@@ -71,8 +71,7 @@ You are a production lead in a creative team. Based on the brief below, create a
 Client Brief:
 {brief}
 """,
-        "Sub-Creative Brief - Visual": f"""
-You are a visual designer. Turn the brief into a **Visual Direction Brief** covering:
+        "Sub-Creative Brief - Visual": f"""You are a visual designer. Turn the brief into a **Visual Direction Brief** covering:
 - Visual Style
 - Colors & Fonts
 - Moodboard references
@@ -81,8 +80,7 @@ You are a visual designer. Turn the brief into a **Visual Direction Brief** cove
 Client Brief:
 {brief}
 """,
-        "Sub-Creative Brief - Copywriting": f"""
-You are a senior copywriter. Create a **Copywriting Brief** including:
+        "Sub-Creative Brief - Copywriting": f"""You are a senior copywriter. Create a **Copywriting Brief** including:
 - Key Messages
 - Tone of Voice
 - Must-use Phrases
@@ -91,8 +89,7 @@ You are a senior copywriter. Create a **Copywriting Brief** including:
 Client Brief:
 {brief}
 """,
-        "Media Brief": f"""
-You are a media strategist. Generate a structured **Media Brief** containing:
+        "Media Brief": f"""You are a media strategist. Generate a structured **Media Brief** containing:
 - Recommended Channels
 - Budget Plan
 - Targeting Strategy
@@ -101,8 +98,7 @@ You are a media strategist. Generate a structured **Media Brief** containing:
 Client Brief:
 {brief}
 """,
-        "Sub-Media Brief - Platform": f"""
-You are a digital planner. Generate a **Platform Brief** including:
+        "Sub-Media Brief - Platform": f"""You are a digital planner. Generate a **Platform Brief** including:
 - Platform Choices
 - Rationale
 - Format Suggestions
@@ -111,8 +107,7 @@ You are a digital planner. Generate a **Platform Brief** including:
 Client Brief:
 {brief}
 """,
-        "Sub-Media Brief - Budgeting": f"""
-You are a performance media specialist. Make a **Media Budget Brief**:
+        "Sub-Media Brief - Budgeting": f"""You are a performance media specialist. Make a **Media Budget Brief**:
 - Total & Per-Channel Budget
 - Efficiency Estimates
 - Optimization Plan
@@ -120,8 +115,7 @@ You are a performance media specialist. Make a **Media Budget Brief**:
 Client Brief:
 {brief}
 """,
-        "Sub-Media Brief - KPI": f"""
-You are a data-driven strategist. Build a **KPI Brief** including:
+        "Sub-Media Brief - KPI": f"""You are a data-driven strategist. Build a **KPI Brief** including:
 - Main & Supporting KPIs
 - Benchmarks
 - Attribution Plan
@@ -132,8 +126,7 @@ Client Brief:
 """
     }
 
-    prompt = templates.get(full_type, f"""
-You are a strategic planner at a digital agency. Based on the client brief below, generate a detailed **{full_type}** with clear structure.
+    prompt = templates.get(full_type, f"""You are a strategic planner at a digital agency. Based on the client brief below, generate a detailed **{full_type}** with clear structure.
 
 Client Brief:
 {brief}
@@ -150,20 +143,16 @@ T = LANGUAGES[lang_code]
 st.title(T["title"])
 st.markdown(T["description"])
 
-# Input brief
-from input_section import get_client_brief_ui
+# Input brief dari text/manual atau upload file
 client_brief = get_client_brief_ui(T["input_label"], T["placeholder"])
 
 # Pilih tipe brief
-brief_type = st.selectbox(
-    T["dropdown_label"],
-    (
-        "Creative Brief",
-        "Sub-Creative Brief",
-        "Media Brief",
-        "Sub-Media Brief"
-    )
-)
+brief_type = st.selectbox(T["dropdown_label"], (
+    "Creative Brief",
+    "Sub-Creative Brief",
+    "Media Brief",
+    "Sub-Media Brief"
+))
 
 # Sub-kategori jika ada
 sub_map = {
@@ -196,19 +185,17 @@ if st.button(T["button"]):
             st.markdown(f"{T['brief_type']}: **{full_type}**")
             st.markdown(T["output"])
 
-            # Escape HTML chars & preserve markdown format
+            # Convert markdown to safe HTML
             safe_html = markdown.markdown(generated)
 
-           # Display in styled div
             styled_output = f"""
             <div style="font-size:14px; line-height:1.7;">
-            {safe_html}
+                {safe_html}
             </div>
             """
             st.markdown(styled_output, unsafe_allow_html=True)
 
-            # Tombol Download
-            import io
+            # Tombol download sebagai TXT
             download_filename = f"{full_type.replace(' ', '_').lower()}_output.txt"
             buffer = io.StringIO()
             buffer.write(generated)
@@ -219,8 +206,7 @@ if st.button(T["button"]):
                 data=buffer,
                 file_name=download_filename,
                 mime="text/plain"
-                )
-
+            )
 
         except Exception as e:
             st.error(f"❌ Failed to generate content:\n\n{str(e)}")
