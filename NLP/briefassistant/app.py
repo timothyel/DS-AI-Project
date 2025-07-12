@@ -144,11 +144,7 @@ sub_map = {
 selected_sub = st.selectbox(T["sub_label"], sub_map[brief_type]) if brief_type in sub_map else None
 output_lang = st.radio(T["output_lang_label"], ["English", "Bahasa Indonesia"], horizontal=True)
 
-if st.button(T["button"]):
-    if not client_brief.strip():
-        st.warning(T["warning"])
-    else:
-        if st.session_state.processing:
+if st.session_state.processing:
     st.info(T["processing"])
 
 if st.session_state.generated_text:
