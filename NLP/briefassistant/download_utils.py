@@ -1,16 +1,13 @@
 import streamlit as st
-import pdfkit
+import io
+from weasyprint import HTML
 
-def generate_pdf_download_button(html_string, filename="brief_output.pdf"):
+def generate_pdf_download_button_from_html(html_string, filename="brief_output.pdf"):
     try:
-        # Tentukan path ke wkhtmltopdf
-        path_wkhtmltopdf = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"  # Sesuaikan dengan lokasimu
-        config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+        # Convert HTML to PDF using WeasyPrint
+        pdf_bytes = HTML(string=html_string).write_pdf()
 
-        # Generate PDF
-        pdf_bytes = pdfkit.from_string(html_string, False, configuration=config)
-
-        # Tombol download
+        # Create download button
         st.download_button(
             label="📄 Download as PDF",
             data=pdf_bytes,
