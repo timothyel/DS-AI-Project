@@ -89,8 +89,9 @@ Client Brief:
 {brief}
 """,
         "Media Brief": f"""You are a media strategist. Create a **Media Brief**:
+Please write it in clean format using bullet points 
 - Recommended Channels
-- Budget Plan
+- Budget Plan 
 - Targeting Strategy
 - KPI & Measurement
 
