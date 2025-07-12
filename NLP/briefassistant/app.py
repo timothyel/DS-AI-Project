@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 import markdown
 from input_section import get_client_brief_ui
-from download_utils import generate_pdf_download_button
+from download_utils import generate_pdf_download_button_from_html
 
 # ==== Konfigurasi ====
 st.set_page_config(page_title="Brief Breakdown Assistant", layout="wide")
@@ -40,7 +40,7 @@ LANGUAGES = {
     }
 }
 
-# ==== Prompt Template ====
+# ==== Prompt Generator ====
 def get_prompt(full_type, brief, output_lang):
     language_instruction = {
         "English": "Please write the output in English.",
@@ -99,7 +99,7 @@ You are a media strategist. Generate a structured **Media Brief** containing:
 - Targeting Strategy
 - KPI & Measurement
 
-and write it in bullet points format
+Please format the output using markdown (with bullet points, tables if needed).
 
 Client Brief:
 {brief}
@@ -145,16 +145,18 @@ Client Brief:
     return prompt + "\n\n" + language_instruction[output_lang]
 
 # ==== UI ====
+
+# Bahasa antarmuka
 lang_code = st.radio("🌐 Language", ["EN", "ID"], horizontal=True)
 T = LANGUAGES[lang_code]
 
 st.title(T["title"])
 st.markdown(T["description"])
 
-# Input
+# Input brief
 client_brief = get_client_brief_ui(T["input_label"], T["placeholder"])
 
-# Pilih tipe brief
+# Jenis brief
 brief_type = st.selectbox(
     T["dropdown_label"],
     (
@@ -165,7 +167,7 @@ brief_type = st.selectbox(
     )
 )
 
-# Subkategori
+# Sub-kategori jika diperlukan
 sub_map = {
     "Sub-Creative Brief": ["Production", "Visual", "Copywriting"],
     "Sub-Media Brief": ["Platform", "Budgeting", "KPI"]
@@ -191,14 +193,21 @@ if st.button(T["button"]):
             response = model.generate_content(prompt)
             generated = response.text
 
+            # Tampilkan hasil
             st.markdown(f"{T['brief_type']}: **{full_type}**")
             st.markdown(T["output"])
 
+            # Konversi markdown ke HTML
             safe_html = markdown.markdown(generated)
-            st.markdown(f"""<div style="font-size:14px; line-height:1.7;">{safe_html}</div>""", unsafe_allow_html=True)
+            styled_html = f"<div style='font-size:14px; line-height:1.7;'>{safe_html}</div>"
 
-            # 🔽 Tombol download PDF
-            generate_pdf_download_button(generated, filename=f"{full_type.replace(' ', '_').lower()}_brief.pdf")
+            st.markdown(styled_html, unsafe_allow_html=True)
+
+            # Tombol download
+            generate_pdf_download_button_from_html(
+                html_content=styled_html,
+                filename=f"{full_type.replace(' ', '_').lower()}_brief.pdf"
+            )
 
         except Exception as e:
             st.error(f"❌ Failed to generate content:\n\n{str(e)}")
