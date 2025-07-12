@@ -3,6 +3,7 @@ import google.generativeai as genai
 import markdown
 from input_section import get_client_brief_ui
 from download_utils import generate_pdf_download_button
+import datetime
 
 # ==== Konfigurasi ====
 st.set_page_config(page_title="Brief Breakdown Assistant", layout="wide")
@@ -172,3 +173,9 @@ if st.button(T["button"]):
         except Exception as e:
             processing_box.empty()
             st.error(f"❌ Failed to generate content:\n\n{str(e)}")
+
+current_year = datetime.datetime.now().year
+st.markdown(
+    f"<hr style='margin-top:30px;'><p style='text-align:center; color:gray;'>© Lingkaran TimothyEL {current_year}</p>",
+    unsafe_allow_html=True
+)
