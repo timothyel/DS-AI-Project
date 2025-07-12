@@ -13,17 +13,17 @@ class PDF(FPDF):
         self.set_font("Arial", size=12)
         lines = text.split("\n")
         for line in lines:
-            # Convert bold markdown (e.g. **bold**) to uppercase as a workaround
+            # Ubah **bold** jadi uppercase
             line = re.sub(r"\*\*(.*?)\*\*", lambda m: m.group(1).upper(), line)
 
-            # Replace bullet symbols (* or -) with •
+            # Ganti bullet (* atau -) dengan •
             if line.strip().startswith(("*", "-")):
                 line = "• " + line.strip()[1:].strip()
 
-            # Replace tabs with spaces (if any)
+            # Replace tab dengan spasi
             line = line.replace("\t", "    ")
 
-            # Encode-safe for latin-1
+            # Amankan encoding
             safe_line = line.encode('latin-1', 'replace').decode('latin-1')
             self.multi_cell(0, 8, safe_line)
 
@@ -32,9 +32,9 @@ def generate_pdf_download_button(text, filename="brief_output.pdf"):
     pdf.add_page()
     pdf.add_body(text)
 
-    pdf_buffer = io.BytesIO()
-    pdf.output(pdf_buffer)
-    pdf_buffer.seek(0)
+    # 👉 Fix: Gunakan output(dest='S') lalu encode ke latin-1
+    pdf_bytes = pdf.output(dest='S').encode('latin-1')  # str → bytes
+    pdf_buffer = io.BytesIO(pdf_bytes)
 
     st.download_button(
         label="📄 Download as PDF",
