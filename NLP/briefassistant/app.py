@@ -176,6 +176,6 @@ if st.button(T["button"]):
 
 current_year = datetime.datetime.now().year
 st.markdown(
-    f"<hr style='margin-top:30px;'><p style='text-align:center; color:gray;'>© Lingkaran TimothyEL {current_year}</p>",
+    f"<hr style='margin-top:30px;'><p style='text-align:center; color:gray;'>Copyright © TimothyEL {current_year}</p>",
     unsafe_allow_html=True
 )
