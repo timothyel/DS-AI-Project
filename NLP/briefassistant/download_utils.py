@@ -4,12 +4,15 @@ from fpdf import FPDF
 import html2text
 
 def generate_pdf_download_button(text, filename="brief_output.pdf"):
-    # Konversi dari markdown-like ke plain text
+    # Konversi markdown/html ke plain text
     text_maker = html2text.HTML2Text()
     text_maker.body_width = 0
     plain_text = text_maker.handle(text)
 
-    # PDF Generation
+    # ✅ Tambahkan ini agar karakter aneh diganti
+    plain_text = plain_text.encode("latin-1", "replace").decode("latin-1")
+
+    # PDF generation
     pdf = FPDF()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -18,7 +21,7 @@ def generate_pdf_download_button(text, filename="brief_output.pdf"):
     for line in plain_text.split("\n"):
         pdf.multi_cell(0, 10, line)
 
-    # ✅ Perbaikan: Output ke string + encode
+    # Output ke string dan encode ke latin-1
     pdf_str = pdf.output(dest='S').encode('latin-1')
     pdf_buffer = io.BytesIO(pdf_str)
 
