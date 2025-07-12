@@ -43,8 +43,8 @@ LANGUAGES = {
 # ==== Prompt Template ====
 def get_prompt(full_type, brief, output_lang):
     language_instruction = {
-        "English": "Please write the output in English. and make the font of your body paragraph in size of 14pt",
-        "Bahasa Indonesia": "Tulis hasil brief ini dalam Bahasa Indonesia dan buat tulisan selain judul di ukuran 14pt."
+        "English": "Please write the output in English.",
+        "Bahasa Indonesia": "Tulis hasil brief ini dalam Bahasa Indonesia."
     }
 
     templates = {
