@@ -1,26 +1,18 @@
 import streamlit as st
+import fitz  # PyMuPDF
 
-def input_form(T):
-    client_brief = st.text_area(T["input_label"], height=250, placeholder=T["placeholder"])
+def get_client_brief_ui(label, placeholder):
+    uploaded_file = st.file_uploader("📎 Upload Client Brief (PDF only)", type=["pdf"])
+    brief_text = ""
 
-    brief_type = st.selectbox(
-        T["dropdown_label"],
-        (
-            "Creative Brief",
-            "Sub-Creative Brief",
-            "Media Brief",
-            "Sub-Media Brief"
-        )
-    )
+    if uploaded_file is not None:
+        try:
+            with fitz.open(stream=uploaded_file.read(), filetype="pdf") as doc:
+                brief_text = "\n".join(page.get_text() for page in doc)
+                st.success("✅ Text extracted from PDF successfully!")
+        except Exception as e:
+            st.error(f"❌ Failed to read PDF: {str(e)}")
+    else:
+        brief_text = st.text_area(label, height=250, placeholder=placeholder)
 
-    sub_map = {
-        "Sub-Creative Brief": ["Production", "Visual", "Copywriting"],
-        "Sub-Media Brief": ["Platform", "Budgeting", "KPI"]
-    }
-    selected_sub = None
-    if brief_type in sub_map:
-        selected_sub = st.selectbox(T["sub_label"], sub_map[brief_type])
-
-    output_lang = st.radio(T["output_lang_label"], ["English", "Bahasa Indonesia"], horizontal=True)
-
-    return client_brief, brief_type, selected_sub, output_lang
+    return brief_text.strip()
