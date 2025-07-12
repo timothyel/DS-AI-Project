@@ -2,58 +2,53 @@ import streamlit as st
 import google.generativeai as genai
 import markdown
 from input_section import get_client_brief_ui
-from download_utils import generate_pdf_download_button
+from download_utils import generate_pdf_download_button_from_html
 
-# ==== Config & Setup ====
+# ==== Konfigurasi ====
 st.set_page_config(page_title="Brief Breakdown Assistant", layout="wide")
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-# ==== Init Session State ====
-st.session_state.setdefault("generated_text", "")
-st.session_state.setdefault("processing", False)
-st.session_state.setdefault("full_type", "")
-
-# ==== Multilang UI Dict ====
-LANG = {
+# ==== Multibahasa UI ====
+LANGUAGES = {
     "EN": {
         "title": "📋 Digital Agency Brief Assistant",
-        "desc": "Enter the **Client Brief**, then select the type of breakdown you want to generate:",
-        "input": "✍️ Client Brief",
+        "description": "Enter the **Client Brief**, then select the type of breakdown you want to generate:",
+        "input_label": "✍️ Client Brief",
         "placeholder": "Example: The client wants to increase awareness for a new skincare product targeting Gen Z on TikTok and Instagram...",
-        "type": "🧩 Select breakdown type:",
-        "sub": "🔸 Select sub-category:",
-        "lang": "🗣️ Output Language",
-        "btn": "🚀 Generate Brief",
-        "warn": "⚠️ Please enter a Client Brief first.",
-        "loading": "Processing brief...",
-        "label_type": "📎 **Brief Type**",
-        "label_output": "🧠 **Generated Brief:**"
+        "dropdown_label": "🧩 Select breakdown type:",
+        "sub_label": "🔸 Select sub-category:",
+        "output_lang_label": "🗣️ Output Language",
+        "button": "🚀 Generate Brief",
+        "warning": "⚠️ Please enter a Client Brief first.",
+        "processing": "Processing brief...",
+        "brief_type": "📎 **Brief Type**",
+        "output": "🧠 **Generated Brief:**"
     },
     "ID": {
         "title": "📋 Asisten Brief Agensi Digital",
-        "desc": "Masukkan **Client Brief**, lalu pilih jenis breakdown yang ingin dihasilkan:",
-        "input": "✍️ Client Brief",
+        "description": "Masukkan **Client Brief**, lalu pilih jenis breakdown yang ingin dihasilkan:",
+        "input_label": "✍️ Client Brief",
         "placeholder": "Contoh: Klien ingin meningkatkan awareness produk skincare baru untuk Gen Z di TikTok dan Instagram...",
-        "type": "🧩 Pilih jenis breakdown:",
-        "sub": "🔸 Pilih sub-kategori:",
-        "lang": "🗣️ Pilih Bahasa Output",
-        "btn": "🚀 Proses Brief",
-        "warn": "⚠️ Mohon masukkan Client Brief terlebih dahulu.",
-        "loading": "Memproses brief...",
-        "label_type": "📎 **Jenis Brief**",
-        "label_output": "🧠 **Brief yang Dihasilkan:**"
+        "dropdown_label": "🧩 Pilih jenis breakdown:",
+        "sub_label": "🔸 Pilih sub-kategori:",
+        "output_lang_label": "🗣️ Pilih Bahasa Output",
+        "button": "🚀 Proses Brief",
+        "warning": "⚠️ Mohon masukkan Client Brief terlebih dahulu.",
+        "processing": "Memproses brief...",
+        "brief_type": "📎 **Jenis Brief**",
+        "output": "🧠 **Brief yang Dihasilkan:**"
     }
 }
 
-# ==== Prompt Template ====
-def build_prompt(full_type, brief, output_lang):
-    instruksi = {
+# ==== Prompt Builder ====
+def get_prompt(full_type, brief, output_lang):
+    language_instruction = {
         "English": "Please write the output in English.",
         "Bahasa Indonesia": "Tulis hasil brief ini dalam Bahasa Indonesia."
     }
-    isi = {
-        "Creative Brief": """
-You are a creative strategist. Create a **Creative Brief** with:
+
+    templates = {
+        "Creative Brief": f"""You are a creative strategist. Create a **Creative Brief** with:
 - Background
 - Objectives
 - Target Audience
@@ -61,102 +56,114 @@ You are a creative strategist. Create a **Creative Brief** with:
 - Tone & Manner
 - Deliverables
 - Timeline
+
+Client Brief:
+{brief}
 """,
-        "Sub-Creative Brief - Production": """
-You are a production lead. Create a **Production Brief**:
+        "Sub-Creative Brief - Production": f"""You are a production lead. Create a **Production Brief**:
 - Format & Duration
 - Shooting Needs
 - Talent & Location
 - Technical Notes
 - Timeline
+
+Client Brief:
+{brief}
 """,
-        "Sub-Creative Brief - Visual": """
-You are a visual designer. Create a **Visual Direction Brief**:
+        "Sub-Creative Brief - Visual": f"""You are a visual designer. Create a **Visual Direction Brief**:
 - Visual Style
 - Colors & Fonts
 - Moodboard
 - Asset Guidelines
+
+Client Brief:
+{brief}
 """,
-        "Sub-Creative Brief - Copywriting": """
-You are a copywriter. Create a **Copywriting Brief**:
+        "Sub-Creative Brief - Copywriting": f"""You are a copywriter. Create a **Copywriting Brief**:
 - Key Messages
 - Tone of Voice
 - Must-use Phrases
 - Platform-specific Adjustments
+
+Client Brief:
+{brief}
 """,
-        "Media Brief": """
-You are a media strategist. please create a clean format in bullet points Create a **Media Brief**:
+        "Media Brief": f"""You are a media strategist. Create a **Media Brief**:
 - Recommended Channels
-- Budget Plan 
+- Budget Plan
 - Targeting Strategy
 - KPI & Measurement
+
+Client Brief:
+{brief}
 """,
-        "Sub-Media Brief - Platform": """
-You are a digital planner. Create a **Platform Brief**:
+        "Sub-Media Brief - Platform": f"""You are a digital planner. Create a **Platform Brief**:
 - Platform Choices
 - Rationale
 - Format Suggestions
 - Organic vs Paid
+
+Client Brief:
+{brief}
 """,
-        "Sub-Media Brief - Budgeting": """
-You are a media buyer. Create a **Budget Brief**:
+        "Sub-Media Brief - Budgeting": f"""You are a media buyer. Create a **Budget Brief**:
 - Total & Per-Channel Budget
 - Efficiency Estimates
 - Optimization Plan
+
+Client Brief:
+{brief}
 """,
-        "Sub-Media Brief - KPI": """
-You are a strategist. Create a **KPI Brief**:
+        "Sub-Media Brief - KPI": f"""You are a strategist. Create a **KPI Brief**:
 - Main & Supporting KPIs
 - Benchmarks
 - Attribution Plan
 - Success Criteria
+
+Client Brief:
+{brief}
 """
     }
 
-    return f"{isi.get(full_type, f'Generate a {full_type}:')}\n\nClient Brief:\n{brief}\n\n{instruksi[output_lang]}"
+    return templates.get(full_type, f"Generate a {full_type}:\n{brief}") + "\n\n" + language_instruction[output_lang]
 
 # ==== UI ====
-lang_choice = st.radio("🌐 Language", ["EN", "ID"], horizontal=True)
-T = LANG[lang_choice]
+lang_code = st.radio("🌐 Language", ["EN", "ID"], horizontal=True)
+T = LANGUAGES[lang_code]
 
 st.title(T["title"])
-st.markdown(T["desc"])
+st.markdown(T["description"])
 
-brief = get_client_brief_ui(T["input"], T["placeholder"])
-brief_type = st.selectbox(T["type"], ["Creative Brief", "Sub-Creative Brief", "Media Brief", "Sub-Media Brief"])
+client_brief = get_client_brief_ui(T["input_label"], T["placeholder"])
+brief_type = st.selectbox(T["dropdown_label"], ["Creative Brief", "Sub-Creative Brief", "Media Brief", "Sub-Media Brief"])
 sub_map = {
     "Sub-Creative Brief": ["Production", "Visual", "Copywriting"],
     "Sub-Media Brief": ["Platform", "Budgeting", "KPI"]
 }
-sub = st.selectbox(T["sub"], sub_map[brief_type]) if brief_type in sub_map else None
-lang_out = st.radio(T["lang"], ["English", "Bahasa Indonesia"], horizontal=True)
+selected_sub = st.selectbox(T["sub_label"], sub_map[brief_type]) if brief_type in sub_map else None
+output_lang = st.radio(T["output_lang_label"], ["English", "Bahasa Indonesia"], horizontal=True)
 
-# ==== Display previous output if exists ====
-if st.session_state.processing:
-    st.info(T["loading"])
-
-if st.session_state.generated_text:
-    st.markdown(f"{T['label_type']}: **{st.session_state.full_type}**")
-    st.markdown(T["label_output"])
-    html_out = markdown.markdown(st.session_state.generated_text)
-    st.markdown(f"<div style='font-size:14px; line-height:1.7;'>{html_out}</div>", unsafe_allow_html=True)
-    generate_pdf_download_button(st.session_state.generated_text, f"{st.session_state.full_type.replace(' ', '_').lower()}.pdf")
-
-# ==== Generate Brief ====
-if st.button(T["btn"]):
-    if not brief.strip():
-        st.warning(T["warn"])
+# Generate
+if st.button(T["button"]):
+    if not client_brief.strip():
+        st.warning(T["warning"])
     else:
-        st.session_state.processing = True
-        full_type = f"{brief_type} - {sub}" if sub else brief_type
-        prompt = build_prompt(full_type, brief.strip(), lang_out)
+        st.info(T["processing"])
+        full_type = f"{brief_type} - {selected_sub}" if selected_sub else brief_type
+        prompt = get_prompt(full_type, client_brief.strip(), output_lang)
 
         try:
             model = genai.GenerativeModel("gemini-2.5-flash")
-            result = model.generate_content(prompt)
-            st.session_state.generated_text = result.text
-            st.session_state.full_type = full_type
+            response = model.generate_content(prompt)
+            generated = response.text
+
+            st.markdown(f"{T['brief_type']}: **{full_type}**")
+            st.markdown(T["output"])
+
+            html_output = markdown.markdown(generated)
+            st.markdown(f"<div style='font-size:14px; line-height:1.7;'>{html_output}</div>", unsafe_allow_html=True)
+
+            generate_pdf_download_button_from_html(html_output, filename=f"{full_type.replace(' ', '_').lower()}.pdf")
+
         except Exception as e:
-            st.error(f"❌ Failed to generate content:\n\n{e}")
-        finally:
-            st.session_state.processing = False
+            st.error(f"❌ Failed to generate content:\n\n{str(e)}")
