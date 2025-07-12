@@ -151,7 +151,8 @@ st.title(T["title"])
 st.markdown(T["description"])
 
 # Input brief
-client_brief = st.text_area(T["input_label"], height=250, placeholder=T["placeholder"])
+from input_section import get_client_brief_ui
+client_brief = get_client_brief_ui(T["input_label"], T["placeholder"])
 
 # Pilih tipe brief
 brief_type = st.selectbox(
