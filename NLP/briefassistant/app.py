@@ -163,7 +163,7 @@ if st.button(T["button"]):
             html_output = markdown.markdown(generated)
             st.markdown(f"<div style='font-size:14px; line-height:1.7;'>{html_output}</div>", unsafe_allow_html=True)
 
-            generate_pdf_download_button_from_html(html_output, filename=f"{full_type.replace(' ', '_').lower()}.pdf")
+            generate_pdf_download_button(text, filename=f"{full_type.replace(' ', '_').lower()}.pdf")
 
         except Exception as e:
             st.error(f"❌ Failed to generate content:\n\n{str(e)}")
