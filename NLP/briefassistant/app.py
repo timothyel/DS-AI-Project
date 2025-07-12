@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 import markdown
 from input_section import get_client_brief_ui
-from download_utils import generate_pdf_download_button_from_html
+from download_utils import generate_pdf_download_button
 
 # ==== Konfigurasi ====
 st.set_page_config(page_title="Brief Breakdown Assistant", layout="wide")
