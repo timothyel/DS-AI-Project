@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 import markdown
 from input_section import get_client_brief_ui
-from download_utils import generate_pdf_download_button_from_html
+from download_utils import generate_pdf_download_button
 
 # ==== Konfigurasi ====
 st.set_page_config(page_title="Brief Breakdown Assistant", layout="wide")
@@ -89,8 +89,9 @@ Client Brief:
 {brief}
 """,
         "Media Brief": f"""You are a media strategist. Create a **Media Brief**:
+Please write it in clean format using bullet points 
 - Recommended Channels
-- Budget Plan
+- Budget Plan 
 - Targeting Strategy
 - KPI & Measurement
 
@@ -143,7 +144,6 @@ sub_map = {
 selected_sub = st.selectbox(T["sub_label"], sub_map[brief_type]) if brief_type in sub_map else None
 output_lang = st.radio(T["output_lang_label"], ["English", "Bahasa Indonesia"], horizontal=True)
 
-# Generate
 if st.button(T["button"]):
     if not client_brief.strip():
         st.warning(T["warning"])
@@ -163,7 +163,7 @@ if st.button(T["button"]):
             html_output = markdown.markdown(generated)
             st.markdown(f"<div style='font-size:14px; line-height:1.7;'>{html_output}</div>", unsafe_allow_html=True)
 
-            generate_pdf_download_button_from_html(html_output, filename=f"{full_type.replace(' ', '_').lower()}.pdf")
+            generate_pdf_download_button(text, filename=f"{full_type.replace(' ', '_').lower()}.pdf")
 
         except Exception as e:
             st.error(f"❌ Failed to generate content:\n\n{str(e)}")
