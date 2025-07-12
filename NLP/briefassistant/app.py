@@ -199,13 +199,28 @@ if st.button(T["button"]):
             # Escape HTML chars & preserve markdown format
             safe_html = markdown.markdown(generated)
 
-            # Display in styled div
+           # Display in styled div
             styled_output = f"""
             <div style="font-size:14px; line-height:1.7;">
-                {safe_html}
+            {safe_html}
             </div>
             """
             st.markdown(styled_output, unsafe_allow_html=True)
+
+            # Tombol Download
+            import io
+            download_filename = f"{full_type.replace(' ', '_').lower()}_output.txt"
+            buffer = io.StringIO()
+            buffer.write(generated)
+            buffer.seek(0)
+
+            st.download_button(
+                label="📥 Download Generated Brief",
+                data=buffer,
+                file_name=download_filename,
+                mime="text/plain"
+                )
+
 
         except Exception as e:
             st.error(f"❌ Failed to generate content:\n\n{str(e)}")
