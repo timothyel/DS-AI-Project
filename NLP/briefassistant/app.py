@@ -95,9 +95,9 @@ Client Brief:
         "Media Brief": f"""
 You are a media strategist. Generate a structured **Media Brief** containing:
 - Recommended Channels
-- Budget Plan
-- Targeting Strategy
-- KPI & Measurement
+- Budget Plan (please create a proper table)
+- Targeting Strategy (please create a proper table)
+- KPI & Measurement (please create a proper table)
 
 Client Brief:
 {brief}
