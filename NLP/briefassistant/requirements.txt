@@ -1,4 +1,5 @@
 streamlit
 google-generativeai
 markdown
-weasyprint
+html2text
+fpdf
