@@ -116,13 +116,16 @@ Client Brief:
   - Attribution model (last-click, data-driven, etc.)
   - Success criteria and how performance will be tracked
 
-Then, create a **Media Plan Summary** in bullet points format. Include:
-- Platform
-- Format
-- Budget Allocation
-- Estimated CPM/CPC
-- Expected Reach/Impressions
-- Target Dates or Flighting Windows
+Then, generate a **Media Plan Summary Table** as structured bullet points below. Do NOT explain, just list:
+
+- **Platform**: (e.g. TikTok)
+- **Format**: (e.g. Short-form video 15s)
+- **Budget Allocation**: (e.g. $3,000 – 30%)
+- **Estimated CPM**: (e.g. $3.00)
+- **Estimated Reach**: (e.g. 1,000,000)
+- **Flighting Window**: (e.g. Aug–Sept 2025)
+
+Repeat the structure for each platform used.
 
 Client Brief:
 {brief}
