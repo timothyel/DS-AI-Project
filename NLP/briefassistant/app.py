@@ -116,16 +116,19 @@ Client Brief:
   - Attribution model (last-click, data-driven, etc.)
   - Success criteria and how performance will be tracked
 
-Then, generate a **Media Plan Summary Table** as structured bullet points below. Do NOT explain, just list:
+Then, generate a **Media Plan Summary Table** as structured bullet points below. Do NOT explain, just list.
 
-- **Platform**: (e.g. TikTok)
-- **Format**: (e.g. Short-form video 15s)
-- **Budget Allocation**: (e.g. $3,000 – 30%)
-- **Estimated CPM**: (e.g. $3.00)
-- **Estimated Reach**: (e.g. 1,000,000)
-- **Flighting Window**: (e.g. Aug–Sept 2025)
+For each platform, use this format:
 
-Repeat the structure for each platform used.
+- **Platform**: e.g. TikTok  
+  - **Format**: e.g. Short-form video (15s)  
+  - **Target Audience** (optional):  
+    - Demographic: e.g. Age 18–24, Female, Urban  
+    - Psychographic: e.g. Trendy, early adopters, skincare lovers  
+  - **Budget Allocation**: e.g. $3,000 – 30%  
+  - **Estimated CPM**: e.g. $2.80  
+  - **Estimated Reach**: e.g. ~1,071,000  
+  - **Flighting Window**: e.g. Aug–Sept 2025
 
 Client Brief:
 {brief}
