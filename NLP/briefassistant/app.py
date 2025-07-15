@@ -116,6 +116,14 @@ Client Brief:
   - Attribution model (last-click, data-driven, etc.)
   - Success criteria and how performance will be tracked
 
+Then, create a **Media Plan Summary** in bullet points format. Include:
+- Platform
+- Format
+- Budget Allocation
+- Estimated CPM/CPC
+- Expected Reach/Impressions
+- Target Dates or Flighting Windows
+
 Client Brief:
 {brief}
 """,
