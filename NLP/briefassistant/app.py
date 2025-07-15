@@ -49,19 +49,21 @@ def get_prompt(full_type, brief, output_lang):
     }
 
     templates = {
-        "Creative Brief": f"""You are a creative strategist. Create a **Creative Brief** with:
+        "Creative Brief": f"""You are a creative strategist. Create a **Creative Brief** that includes:
 - Background
 - Objectives
-- Target Audience
+- Target Audience:
+  - Demographic (age, gender, location, income group)
+  - Psychographic (values, lifestyle, digital habits, interests)
 - Key Message
-- Tone & Manner
+- Tone & Manner (If already stated in the client brief, interpret and refine it into actionable creative direction. If not, suggest based on target.)
 - Deliverables
 - Timeline
 
 Client Brief:
 {brief}
 """,
-        "Sub-Creative Brief - Production": f"""You are a production lead. Create a **Production Brief**:
+        "Sub-Creative Brief - Production": f"""You are a production lead. Create a **Production Brief** with:
 - Format & Duration
 - Shooting Needs
 - Talent & Location
@@ -71,16 +73,16 @@ Client Brief:
 Client Brief:
 {brief}
 """,
-        "Sub-Creative Brief - Visual": f"""You are a visual designer. Create a **Visual Direction Brief**:
+        "Sub-Creative Brief - Visual": f"""You are a visual designer. Create a **Visual Direction Brief** with:
 - Visual Style
 - Colors & Fonts
-- Moodboard
+- Moodboard Direction
 - Asset Guidelines
 
 Client Brief:
 {brief}
 """,
-        "Sub-Creative Brief - Copywriting": f"""You are a copywriter. Create a **Copywriting Brief**:
+        "Sub-Creative Brief - Copywriting": f"""You are a copywriter. Create a **Copywriting Brief** that includes:
 - Key Messages
 - Tone of Voice
 - Must-use Phrases
@@ -89,38 +91,55 @@ Client Brief:
 Client Brief:
 {brief}
 """,
-        "Media Brief": f"""You are a media strategist. Create a **Media Brief**:
-Please write it in clean format using bullet points 
-- Recommended Channels
-- Budget Plan 
-- Targeting Strategy
-- KPI & Measurement
+        "Media Brief": f"""You are a media strategist. Create a **Media Brief** using bullet points and actionable insights:
+
+- **Recommended Channels**: Choose suitable platforms (Meta Ads, TikTok, YouTube, Programmatic). Do NOT mention GDN.
+- **Budget Plan**:
+  - Total budget suggestion
+  - Breakdown per channel (% or estimated)
+  - Estimated CPM/CPC
+  - Suggested flighting (weekly/monthly)
+- **Targeting Strategy**:
+  - Audience Demographic (age, gender, geo, income)
+  - Audience Psychographic (interests, behavior, lifestyle)
+  - Target Segments (e.g. students, young moms, sneakerheads)
+  - Custom/Lookalike strategy
+- **KPI & Measurement**:
+  - Primary KPIs (e.g. Reach, Impressions, ROAS, Leads)
+  - Supporting KPIs (e.g. CTR, View Rate, Engagement Rate)
+  - Benchmarks or estimated performance targets per platform
+  - Attribution model (last-click, data-driven, etc.)
+  - Success criteria and how performance will be tracked
 
 Client Brief:
 {brief}
 """,
-        "Sub-Media Brief - Platform": f"""You are a digital planner. Create a **Platform Brief**:
-- Platform Choices
-- Rationale
-- Format Suggestions
-- Organic vs Paid
+        "Sub-Media Brief - Platform": f"""You are a digital planner. Create a **Platform Brief** with:
+- Platform Choices (Meta, TikTok, YouTube, etc.)
+- Rationale per platform
+- Format Suggestions (video, carousel, etc.)
+- Organic vs Paid Roles
 
 Client Brief:
 {brief}
 """,
-        "Sub-Media Brief - Budgeting": f"""You are a media buyer. Create a **Budget Brief**:
-- Total & Per-Channel Budget
-- Efficiency Estimates
-- Optimization Plan
+        "Sub-Media Brief - Budgeting": f"""You are a media buyer. Create a **Budget Allocation Plan** including:
+- Total budget (if known, otherwise suggest a range)
+- Per-channel allocation
+- CPM/CPC assumptions
+- Estimated impressions/reach per platform
+- Flighting plan (weekly/monthly)
+- Optimization plan based on performance
 
 Client Brief:
 {brief}
 """,
-        "Sub-Media Brief - KPI": f"""You are a strategist. Create a **KPI Brief**:
-- Main & Supporting KPIs
-- Benchmarks
-- Attribution Plan
-- Success Criteria
+        "Sub-Media Brief - KPI": f"""You are a digital strategist. Create a **KPI Brief** that includes:
+- Main KPIs (e.g. ROAS, CPA, Leads)
+- Supporting metrics (CTR, View Rate)
+- Benchmarks (industry or estimated)
+- Attribution model (last-click, data-driven, etc.)
+- Success Criteria and Reporting Frequency
 
 Client Brief:
 {brief}
@@ -160,7 +179,7 @@ if st.button(T["button"]):
             response = model.generate_content(prompt)
             generated = response.text
 
-            processing_box.empty()  # ⬅️ ini yang hilangin "processing..."
+            processing_box.empty()
 
             st.markdown(f"{T['brief_type']}: **{full_type}**")
             st.markdown(T["output"])
@@ -174,6 +193,7 @@ if st.button(T["button"]):
             processing_box.empty()
             st.error(f"❌ Failed to generate content:\n\n{str(e)}")
 
+# ==== Footer ====
 current_year = datetime.datetime.now().year
 st.markdown(
     f"<hr style='margin-top:30px;'><p style='text-align:center; color:gray;'>Copyright © TimothyEL {current_year}</p>",
