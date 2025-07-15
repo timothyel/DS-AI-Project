@@ -91,14 +91,19 @@ Client Brief:
 Client Brief:
 {brief}
 """,
-        "Media Brief": f"""You are a media strategist. Create a **Media Brief** using bullet points and actionable insights:
+       "Media Brief": f"""You are a media strategist. Create a **Media Brief** using bullet points and actionable insights:
 
 - **Recommended Channels**: Choose suitable platforms (Meta Ads, TikTok, YouTube, Programmatic). Do NOT mention GDN.
 - **Budget Plan**:
-  - Total budget suggestion
-  - Breakdown per channel (% or estimated)
-  - Estimated CPM/CPC
-  - Suggested flighting (weekly/monthly)
+  - Total budget suggestion (range or estimated total)
+  - Breakdown by channel:
+    - Meta Ads (Facebook, Instagram): %
+    - TikTok Ads: %
+    - YouTube Ads: %
+    - Others (if relevant): %
+  - Rationale for allocation per channel
+  - Estimated CPM/CPC per channel
+  - Suggested flighting plan (weekly/monthly)
 - **Targeting Strategy**:
   - Audience Demographic (age, gender, geo, income)
   - Audience Psychographic (interests, behavior, lifestyle)
@@ -113,6 +118,8 @@ Client Brief:
 
 Client Brief:
 {brief}
+"""
+        
 """,
         "Sub-Media Brief - Platform": f"""You are a digital planner. Create a **Platform Brief** with:
 - Platform Choices (Meta, TikTok, YouTube, etc.)
