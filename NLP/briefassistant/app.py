@@ -91,7 +91,7 @@ Client Brief:
 Client Brief:
 {brief}
 """,
-       "Media Brief": f"""You are a media strategist. Create a **Media Brief** using bullet points and actionable insights:
+        "Media Brief": f"""You are a media strategist. Create a **Media Brief** using bullet points and actionable insights:
 
 - **Recommended Channels**: Choose suitable platforms (Meta Ads, TikTok, YouTube, Programmatic). Do NOT mention GDN.
 - **Budget Plan**:
@@ -118,8 +118,6 @@ Client Brief:
 
 Client Brief:
 {brief}
-"""
-        
 """,
         "Sub-Media Brief - Platform": f"""You are a digital planner. Create a **Platform Brief** with:
 - Platform Choices (Meta, TikTok, YouTube, etc.)
